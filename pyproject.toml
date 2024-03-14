@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "enfysmechboard"
+version = "0.1.0"
+description = "Virtual Environment for the Enfys MechBoard UART Interpreter and testbench"
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pyserial = "^3.5"
+crc8 = "^0.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
