@@ -10,8 +10,9 @@ import os
 
 #-------------------------Initialisation----------------------------#
 portnum = "COM4"                                                                        #Serial Port initialisation
-cmdInput =   b'\x1f\x01\x00\x00\x00\x00\x00'                                            #CMD to Artix7
+cmdInput =   b'\x10\x00\x0A\x00\x00\x00\x00'                                            #CMD to Artix7
 i =0
+filename = ""
 port = serial.Serial(port = portnum,                                                    #Serial Port Initialisation
                      baudrate=115200,
                      bytesize = serial.EIGHTBITS,
@@ -41,6 +42,10 @@ def crc8Calculate(cmdInput) :
         print("\nCRC is {} ({})".format(crc8Frame.hex(), type(crc8Frame)) )
         load()
         return crc8Frame 
+
+#--------------------File Functions--------------------------#
+#def openCMDFile (filename):
+
 
 #------------------------Main Function-----------------------------#
 while(1):
