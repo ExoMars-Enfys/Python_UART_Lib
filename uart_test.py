@@ -12,7 +12,9 @@ from uiLib import UI
 #-------------------------Initialisation----------------------------#
 portnum = "COM4"                                                                        #Serial Port initialisation
 #cmdParam =   b'\x0A\x61\xA8\x00\x06\x0A\x7f'                                            #CMD to Artix7
-#cmdInput =   b'\x10\x0F\xFF\x00\x00\x00\x00'
+#cmdInput =   b'100FFF00000000'
+exit_flag =0
+
 i =0
 filename = ""
 port = serial.Serial(port = portnum,                                                    #Serial Port Initialisation
@@ -20,7 +22,7 @@ port = serial.Serial(port = portnum,                                            
                      bytesize = serial.EIGHTBITS,
                      parity = serial.PARITY_ODD,
                      stopbits = serial.STOPBITS_ONE,
-                     timeout= 2)
+                     timeout = 0.5)
 port.flushOutput()                                                                      #Port Flushing to clear port
 port.flushInput()
 text = "----------------------------------------------\n---ExoMars Rosalind Franklin Rover - Enfys---\n-----Mech Board Artix 7 CMD Interpreter-----\n----------Giorgos Kollakides - MSSL---------"
@@ -33,7 +35,7 @@ def load():
         for i in range(25):
                 sys.stdout.write("-")
                 sys.stdout.flush()
-                sleep(0.03)
+                sleep(0.005)
 #--------------------CRC8 Parity Generator--------------------------#
 def crc8Calculate(cmdInput) :        
         hash = crc8.crc8()
@@ -41,9 +43,24 @@ def crc8Calculate(cmdInput) :
         load()
         hash.update(cmdInput)
         crc8Frame = hash.digest()
-        print("\nCRC is {} ({})".format(crc8Frame.hex(), type(crc8Frame)) )
+        print("\nCRC is {} ({})".format(crc8Frame, type(crc8Frame)) )
         load()
         return crc8Frame 
+#-----------------Repetitive Function--------------------------#
+def cmdGetter():
+        cmdInput = UI()
+        print("\nAttempting to Write to Artix 7")
+        load()  
+        HashedInput = cmdInput + crc8Calculate(cmdInput)
+        cmdsent = port.write(HashedInput)                                   #Initialise Transmission and Transmission Counter Incrementation
+        print("\nSent" , cmdsent, "bytes in the form :", HashedInput.hex())
+        load()
+        responseCMD = port.read(42)                                             #Read the Response from the Artix7
+        print("\n Response from Artix 7 :", responseCMD.hex())                  #Output the Response from the Artix 7 to the user
+        if len(responseCMD) == 0:
+                print("NO RESPONSE FROM ARTIX 7 ***ERROR***")
+                exit_flag = 1                                                            #Raise program end exit flag
+        return         
 
 #--------------------File Functions--------------------------#
 #def openCMDFile (filename):
@@ -55,24 +72,10 @@ while(1):
                 os.system('cls')
                 typewrite(text)
                 print("\nArtix 7 Port open and connected to: " + port.portstr)          #Print Connection Message
-                cmdInput = UI()
-                print("\nAttempting to Write to Artix 7")
-                load()  
-                HashedInput = cmdInput + crc8Calculate(cmdInput)
-                cmdsent = port.write(HashedInput)                                   #Initialise Transmission and Transmission Counter Incrementation
-                print("\nSent" , cmdsent, "bytes in the form :", HashedInput.hex())
-                load()
-                responseCMD = port.read(42)                                             #Read the Response from the Artix7
-                print("\n Response from Artix 7 :", responseCMD.hex())                  #Output the Response from the Artix 7 to the user
-                if len(responseCMD) == 0:
-                        print("NO RESPONSE FROM ARTIX 7 ***ERROR***")
-                exitflag = 1                                                            #Raise program end exit flag
-
-                if exitflag == 1:                                                       #Exit Program
-                        exit()
-        else:
+                while(cmdGetter()== 0):
+                        print("")
+        elif exit_flag == 1:        
                 typewrite(text)
                 print("\nPort", port.portstr, "Failed to Open")                         #Port Connection error
                 port.close()
                 exit()
-
