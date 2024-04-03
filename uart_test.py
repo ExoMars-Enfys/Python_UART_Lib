@@ -7,10 +7,12 @@ from time import sleep
 import sys
 import crc8
 import os
+from uiLib import UI
 
 #-------------------------Initialisation----------------------------#
 portnum = "COM4"                                                                        #Serial Port initialisation
-cmdInput =   b'\x10\x00\x0A\x00\x00\x00\x00'                                            #CMD to Artix7
+#cmdParam =   b'\x0A\x61\xA8\x00\x06\x0A\x7f'                                            #CMD to Artix7
+#cmdInput =   b'\x10\x0F\xFF\x00\x00\x00\x00'
 i =0
 filename = ""
 port = serial.Serial(port = portnum,                                                    #Serial Port Initialisation
@@ -53,12 +55,12 @@ while(1):
                 os.system('cls')
                 typewrite(text)
                 print("\nArtix 7 Port open and connected to: " + port.portstr)          #Print Connection Message
+                cmdInput = UI()
                 print("\nAttempting to Write to Artix 7")
-                load()                
+                load()  
                 HashedInput = cmdInput + crc8Calculate(cmdInput)
-                isBytessent = port.write(HashedInput)                                   #Initialise Transmission and Transmission Counter Incrementation
-                print("\nCommand type : ", type(HashedInput))                           #Check the format and type of the bytearray being sent
-                print("Sent" , isBytessent, "bytes in the form :", HashedInput.hex())
+                cmdsent = port.write(HashedInput)                                   #Initialise Transmission and Transmission Counter Incrementation
+                print("\nSent" , cmdsent, "bytes in the form :", HashedInput.hex())
                 load()
                 responseCMD = port.read(42)                                             #Read the Response from the Artix7
                 print("\n Response from Artix 7 :", responseCMD.hex())                  #Output the Response from the Artix 7 to the user
