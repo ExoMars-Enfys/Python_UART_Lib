@@ -1,6 +1,6 @@
 #-----Initialise Variables -----#
 import os
-def UI():
+def UI(output):
     cmd = ["00"] *7
     cmd[0] = input("\nEnter the Command ID\n" 
                 + "\nAvailable Options: " 
@@ -43,7 +43,7 @@ def UI():
                     output = b'\x04\x01\x00\x00\x00\x00\x00'
                 case _:
                     print("\n Not a valid input, please Try Again")
-                    UI()
+                    UI(output)
         case "05":
             os.system('cls')
             cmd[1] = input("\n Enter the Heater Control Bit Mask\n" 
@@ -71,7 +71,7 @@ def UI():
                     output = b'\x05\x04\x00\x00\x00\x00\x00'
                 case _:
                     print("\n Not a valid input, please Try Again")
-                    UI()
+                    UI(output)
         case "0A":
             os.system("cls")
             cmd[2] = input("\n Enter Maximum Current\n" 
@@ -111,7 +111,7 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x06\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -127,7 +127,7 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x06\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -143,10 +143,10 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x06\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case "000B":
                             print("\n Set PWM Rate to 61.44μs")
                             cmd[5] = input("\n Enter the Motor Speed\n" 
@@ -170,7 +170,7 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x0B\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -186,7 +186,7 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x0B\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -202,10 +202,10 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x0B\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case "000C":
                             print("\n Set PWM Rate to 66.56μs")
                             cmd[5] = input("\n Enter the Motor Speed\n" 
@@ -229,7 +229,7 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x0C\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -245,7 +245,7 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x0C\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -261,13 +261,13 @@ def UI():
                                             output = b'\x0A\x60\x00\x00\x0C\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()  
+                            UI(output)  
                 case "8000":
                     print("\n Set Max Current to 93.7mA")
                     cmd[4] = input("\n Enter the PWM Rate\n" 
@@ -299,7 +299,7 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x06\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -315,7 +315,7 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x06\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -331,10 +331,10 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x06\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case "000B":
                             print("\n Set PWM Rate to 61.44μs")
                             cmd[5] = input("\n Enter the Motor Speed\n" 
@@ -358,7 +358,7 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x0B\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -374,7 +374,7 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x0B\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -390,10 +390,10 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x0B\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case "000C":
                             print("\n Set PWM Rate to 66.56μs")
                             cmd[5] = input("\n Enter the Motor Speed\n" 
@@ -417,7 +417,7 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x0C\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -433,7 +433,7 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x0C\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -449,13 +449,13 @@ def UI():
                                             output = b'\x0A\x80\x00\x00\x0C\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()  
+                            UI(output)  
                 case "A000":
                     print("\n Set Max Current to 93.7mA")
                     cmd[4] = input("\n Enter the PWM Rate\n" 
@@ -487,7 +487,7 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x06\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -503,7 +503,7 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x06\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -519,10 +519,10 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x06\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case "000B":
                             print("\n Set PWM Rate to 61.44μs")
                             cmd[5] = input("\n Enter the Motor Speed\n" 
@@ -546,7 +546,7 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x0B\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -562,7 +562,7 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x0B\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -578,10 +578,10 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x0B\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case "000C":
                             print("\n Set PWM Rate to 66.56μs")
                             cmd[5] = input("\n Enter the Motor Speed\n" 
@@ -605,7 +605,7 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x0C\x04\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0A":
                                     print("\nSet Speed to 0A")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -621,7 +621,7 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x0C\x0A\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case "0F":
                                     print("\nSet Speed to 0F")
                                     cmd[6] = input("\n Enter the PWM Duty\n" 
@@ -637,16 +637,16 @@ def UI():
                                             output = b'\x0A\xA0\x00\x00\x0C\x0F\x7F'
                                         case _:
                                             print("\n Not a valid input, please Try Again")
-                                            UI()
+                                            UI(output)
                                 case _:
                                     print("\n Not a valid input, please Try Again")
-                                    UI()        
+                                    UI(output)        
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()  
+                            UI(output)  
                 case _:
                     print("\n Not a valid input, please Try Again")
-                    UI()
+                    UI(output)
         case "10":
             os.system('cls')
             cmd[1] = input("\n Enter the Steps MSB\n" 
@@ -671,8 +671,8 @@ def UI():
                             output = b'\x10\x00\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
-                case "01":
+                            UI(output)
+                case "08":
                     print("\n Set Motor MSB to 08")
                     cmd[2] = input("\n Enter the Steps LSB\n" 
                             + "\n Available Options Are:"                            
@@ -691,8 +691,8 @@ def UI():
                             output = b'\x10\x08\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
-                case "02":
+                            UI(output)
+                case "0F":
                     print("\n Set Motor MSB to 0F")
                     cmd[2] = input("\n Enter the Steps LSB\n" 
                             + "\n Available Options Are:"                            
@@ -711,7 +711,10 @@ def UI():
                             output = b'\x10\x0F\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
+                case _:
+                        print("\n Not a valid input, please Try Again")
+                        UI(output)        
         case "11":
             os.system('cls')
             cmd[1] = input("\n Enter the Steps MSB\n" 
@@ -736,7 +739,7 @@ def UI():
                             output = b'\x11\x00\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
                 case "01":
                     print("\n Set Motor MSB to 08")
                     cmd[2] = input("\n Enter the Steps LSB\n" 
@@ -756,7 +759,7 @@ def UI():
                             output = b'\x11\x08\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
                 case "02":
                     print("\n Set Motor MSB to 0F")
                     cmd[2] = input("\n Enter the Steps LSB\n" 
@@ -776,7 +779,7 @@ def UI():
                             output = b'\x11\x0F\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()        
+                            UI(output)        
         case "12":
             os.system('cls')
             cmd[1] = input("\n Enter the Absolute Position MSB\n" 
@@ -801,7 +804,7 @@ def UI():
                             output = b'\x12\x00\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
                 case "01":
                     print("\n Set Motor Absolute Position MSB to 08")
                     cmd[2] = input("\n Enter the Absolute Position LSB\n" 
@@ -821,7 +824,7 @@ def UI():
                             output = b'\x12\x08\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
                 case "02":
                     print("\n Set Motor Absolute Position MSB to 0F")
                     cmd[2] = input("\n Enter the Absolute Position LSB\n" 
@@ -841,7 +844,7 @@ def UI():
                             output = b'\x12\x0F\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()        
+                            UI(output)        
         case "13":
                     os.system('cls')
                     cmd[1] = input("\nSelect which End stop to move to\n" 
@@ -861,7 +864,7 @@ def UI():
                             output = b'\x13\x02\x00\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
         case "1C":
                     os.system('cls')
                     cmd[1] = input("\nSelect UART BaudRate\n" 
@@ -881,7 +884,7 @@ def UI():
                             output = b'\x1C\x02\x00\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
         case "1F":
             os.system('cls')
             cmd[1] = input("\n Enter the Number of samples per packet\n" 
@@ -906,7 +909,7 @@ def UI():
                             output = b'\x10\x00\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
                 case "01":
                     print("\n Set Number of samples  to 08")
                     cmd[2] = input("\n Enter the Steps LSB\n" 
@@ -926,7 +929,7 @@ def UI():
                             output = b'\x10\x08\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
+                            UI(output)
                 case "02":
                     print("\n Set Number of samples  to 0F")
                     cmd[2] = input("\n Enter the delay between samples\n" 
@@ -946,11 +949,13 @@ def UI():
                             output = b'\x10\x0F\xFF\x00\x00\x00\x00'
                         case _:
                             print("\n Not a valid input, please Try Again")
-                            UI()
-        
-
-    return(output)
+                            UI(output)
+        case _:
+                    print("\n Not a valid input, please Try Again")
+                    UI(output)
+    return output
 
 # while 1:
-#     UI()     
-#     os.system('cls')
+#     output = b''
+#     UI(output)     
+#     exit
