@@ -740,7 +740,7 @@ def UI(output):
                         case _:
                             print("\n Not a valid input, please Try Again")
                             UI(output)
-                case "01":
+                case "08":
                     print("\n Set Motor MSB to 08")
                     cmd[2] = input("\n Enter the Steps LSB\n" 
                             + "\n Available Options Are:"                            
@@ -760,7 +760,7 @@ def UI(output):
                         case _:
                             print("\n Not a valid input, please Try Again")
                             UI(output)
-                case "02":
+                case "0F":
                     print("\n Set Motor MSB to 0F")
                     cmd[2] = input("\n Enter the Steps LSB\n" 
                             + "\n Available Options Are:"                            
