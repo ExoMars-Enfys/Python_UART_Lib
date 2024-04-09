@@ -3,16 +3,7 @@ import os
 from timer import load
 from typewriter import typewrite
 port = ""
-def uart_initialiser(port):
-    port = serial.Serial(port = "COM6",                                                    #Serial Port Initialisation
-                    baudrate=115200,
-                    bytesize = serial.EIGHTBITS,
-                    parity = serial.PARITY_ODD,
-                    stopbits = serial.STOPBITS_ONE,
-                    timeout = 0.5)
-    port.flushOutput()                                                                      #Port Flushing to clear port
-    port.flushInput()
-    return port
+
 
 def uart_openport(port):
     match port:

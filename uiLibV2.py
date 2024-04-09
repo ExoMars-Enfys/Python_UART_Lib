@@ -1,3 +1,4 @@
+import os
 def UI(output):
     cmd = ["00"] *7
     startupcmd = ""
@@ -28,8 +29,12 @@ def UI(output):
             match cmd[0]:
                 case "00" :
                     print("\n No further parameters required. Now Requesting Housekeeping from Artix 7")
+                    output = "".join(cmd) 
+                    
                 case "01" :
                     print("\n No further parameters required. Now Clearing all Errors on Artix 7")
+                    output = "".join(cmd) 
+
                 case "04":
                     os.system('cls')
                     cmd[1] = input("\n Enter the Power Control Bit Mask\n" 
@@ -43,7 +48,8 @@ def UI(output):
                             print("\n Power on of Detector Board selected")
                         case _:
                             print("\n Not a valid input, please Try Again\n")
-                    output = "".join(cmd)            
+                    output = "".join(cmd)         
+
                 case "05":
                     os.system('cls')
                     cmd[1] = input("\n Enter the Heater Control Bit Mask\n" 
@@ -67,6 +73,7 @@ def UI(output):
                         case _:
                             print("\n Not a valid input, please Try Again\n")
                     output = "".join(cmd)    
+
                 case "06":
                         os.system('cls')
                         cmd[1] = input("\n Enter the Mechanism Board Off SP in the form XXXX\n" 
@@ -89,7 +96,8 @@ def UI(output):
                                 cmd[3] = cmd[3][0:2]
                             case _:
                                 print("\n Not a valid input, please Try Again\n")
-                        output = "".join(cmd)    
+                        output = "".join(cmd)  
+
                 case "07":
                         os.system('cls')
                         cmd[1] = input("\n Enter the Detector Board Off SP in the form XXXX\n" 
@@ -113,6 +121,7 @@ def UI(output):
                             case _:
                                 print("\n Not a valid input, please Try Again\n")
                         output = "".join(cmd)    
+
                 case "0A":
                     os.system("cls")
                     cmd[1] = input("\n Enter Maximum Current in the form XXXX \n" 
@@ -163,9 +172,9 @@ def UI(output):
                         case "7F":                    
                             print("\n Set PWM Duty to 50%")
                         case _:
-                            print("\n Not a valid input, please Try Again\n")
-                            
+                            print("\n Not a valid input, please Try Again\n")                            
                     output = "".join(cmd)            
+
                 case "10":
                         os.system('cls')
                         cmd[1] = input("\n Enter the Steps in the form XXXX\n" 
@@ -180,6 +189,7 @@ def UI(output):
                             case _:
                                 print("\n Not a valid input, please Try Again\n")
                         output = "".join(cmd)
+
                 case "11":
                         os.system('cls')
                         cmd[1] = input("\n Enter the Steps in the form XXXX\n" 
@@ -194,6 +204,7 @@ def UI(output):
                             case _:
                                 print("\n Not a valid input, please Try Again\n")
                         output = "".join(cmd)    
+
                 case "12":
                         os.system('cls')
                         cmd[1] = input("\n Enter the Absolute position in the form XXXX\n" 
@@ -208,6 +219,7 @@ def UI(output):
                             case _:
                                 print("\n Not a valid input, please Try Again\n")
                         output = "".join(cmd)    
+
                 case "13":
                             os.system('cls')
                             cmd[1] = input("\nSelect which End stop to move to\n" 
@@ -224,8 +236,8 @@ def UI(output):
                                     print("\n Move to Parked Position")
                                 case _:
                                     print("\n Not a valid input, please Try Again\n")
-                                    
                             output = "".join(cmd)    
+
                 case "1F":
                     os.system('cls')
                     cmd[1] = input("\n Enter the Number of samples per packet in the form XX" 
@@ -245,10 +257,10 @@ def UI(output):
                             print("\n Set Number of samples to : " , cmd[2])
                         case _:
                             print("\n Not a valid input, please Try Again\n")
-                            
                     output = "".join(cmd)    
                 case _:
-                            print("\n Not a valid input, please Try Again\n")                  
+                            print("\n Not a valid input, please Try Again\n")  
+
         case "2":
             print("Do things here")
         case "0" :

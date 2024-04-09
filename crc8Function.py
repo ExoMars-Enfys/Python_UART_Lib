@@ -8,4 +8,5 @@ def crc8Calculate(cmdInput) :
         crc8Frame = hash.digest()
         print("CRC is {} ({})".format(crc8Frame, type(crc8Frame)) )
         HashedInput = cmdInput + crc8Frame
+        print(HashedInput)
         return HashedInput 
