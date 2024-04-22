@@ -19,7 +19,7 @@ port=""
 inputCmd = ""
 response =""
 #---------------------FPGA Boot and Connect-------------------------#
-port = serial.Serial(port = "COM4",                                                    #Serial Port Initialisation
+port = serial.Serial(port = "COM6",                                                    #Serial Port Initialisation
                     baudrate=115200,
                     bytesize = serial.EIGHTBITS,
                     parity = serial.PARITY_ODD,

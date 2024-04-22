@@ -1,5 +1,9 @@
 import os
 def UI(output):
+    nominal_current = "61A8"
+    nominal_pwm_rate = "0006"
+    nominal_speed = "04"
+    nominal_pwm_duty = "7F"
     cmd = ["00"] *7
     startupcmd = ""
     exit_flag = ""
@@ -12,21 +16,29 @@ def UI(output):
         case "1" :
             cmd[0] = input("\nEnter the Command ID\n" 
                 + "\nAvailable Options: " 
-                + "\n 1.  00 Request Housekeeping"
-                + "\n 2.  01 Clear Errors"
-                + "\n 3.  04 Power Controls"
-                + "\n 4.  05 Heater Controls"
-                + "\n 5.  06 Set Mechanism SP"
-                + "\n 6.  07 Set Detector SP"
-                + "\n 7.  0A Set Motor Drive Parameters"
-                + "\n 8.  0B Set Motor Drive Guards"
-                + "\n 9.  0C Set Motor Monitor Limits"
-                + "\n 10. 10 Move Motor Forwards"
-                + "\n 11. 11 Move Motor Backwards"
-                + "\n 12. 12 Move Motor to Absolute Position"
-                + "\n 13. 13 Drive Motor to Chosen End Switch"
-                + "\n 14. 1F Request Science Reading\n")
+                + "\n 1.   N  Initialise Nominal Values"
+                + "\n 2.   00 Request Housekeeping"
+                + "\n 3.   01 Clear Errors"
+                + "\n 4.   04 Power Controls"
+                + "\n 5.   05 Heater Controls"
+                + "\n 6.   06 Set Mechanism SP"
+                + "\n 7.   07 Set Detector SP"
+                + "\n 8.   0A Set Motor Drive Parameters"
+                + "\n 9.   0B Set Motor Drive Guards"
+                + "\n 10.  0C Set Motor Monitor Limits"
+                + "\n 11.  10 Move Motor Forwards"
+                + "\n 12.  11 Move Motor Backwards"
+                + "\n 13.  12 Move Motor to Absolute Position"
+                + "\n 14.  13 Drive Motor to Chosen End Switch"
+                + "\n 15.  1F Request Science Reading\n")
             match cmd[0]:
+                case "N"  :
+                    print("\n Now writing Nominal parameters as: "
+                    + "\n     Current : " + nominal_current
+                    + "\n     Pwm Rate : " + nominal_pwm_rate
+                    + "\n     Current : " + nominal_speed
+                    + "\n     Current : " + nominal_pwm_duty)
+                    output = "".join("0A" + nominal_current + nominal_pwm_rate + nominal_speed + nominal_pwm_duty)
                 case "00" :
                     print("\n No further parameters required. Now Requesting Housekeeping from Artix 7")
                     output = "".join(cmd) 
