@@ -4,6 +4,12 @@ def UI(output):
     nominal_pwm_rate = "0006"
     nominal_speed = "04"
     nominal_pwm_duty = "7F"
+    nominal_recirc = "0F"
+    nominal_guardtime = "00FA"
+    nominal_recval = "38"
+    nominal_spi = "0005"
+
+
     cmd = ["00"] *7
     startupcmd = ""
     exit_flag = ""
@@ -16,29 +22,41 @@ def UI(output):
         case "1" :
             cmd[0] = input("\nEnter the Command ID\n" 
                 + "\nAvailable Options: " 
-                + "\n 1.   N  Initialise Nominal Values"
-                + "\n 2.   00 Request Housekeeping"
-                + "\n 3.   01 Clear Errors"
-                + "\n 4.   04 Power Controls"
-                + "\n 5.   05 Heater Controls"
-                + "\n 6.   06 Set Mechanism SP"
-                + "\n 7.   07 Set Detector SP"
-                + "\n 8.   0A Set Motor Drive Parameters"
-                + "\n 9.   0B Set Motor Drive Guards"
-                + "\n 10.  0C Set Motor Monitor Limits"
-                + "\n 11.  10 Move Motor Forwards"
-                + "\n 12.  11 Move Motor Backwards"
-                + "\n 13.  12 Move Motor to Absolute Position"
-                + "\n 14.  13 Drive Motor to Chosen End Switch"
-                + "\n 15.  1F Request Science Reading\n")
+                + "\n --------------------------------------------------------"
+                + "\n | No: | CMD ID | Command Description                   |"
+                + "\n --------------------------------------------------------"
+                + "\n | 1.  |   N    | Initialise Nominal Motor Drive Values |"
+                + "\n | 2.  |   G    | Initialise Nominal Guard Values       |"
+                + "\n | 3.  |   00   |  Request Housekeeping                 |"
+                + "\n | 4.  |   01   |  Clear Errors                         |"
+                + "\n | 5.  |   04   |  Power Controls                       |"
+                + "\n | 6.  |   05   |  Heater Controls                      |"
+                + "\n | 7.  |   06   |  Set Mechanism SP                     |"
+                + "\n | 8.  |   07   |  Set Detector SP                      |"
+                + "\n | 9.  |   0A   |  Set Motor Drive Parameters           |"
+                + "\n | 10. |   0B   |  Set Motor Drive Guards               |"
+                + "\n | 11. |   0C   |  Set Motor Monitor Limits             |"
+                + "\n | 12. |   10   |  Move Motor Forwards                  |"
+                + "\n | 13. |   11   |  Move Motor Backwards                 |"
+                + "\n | 14. |   12   |  Move Motor to Absolute Position      |"
+                + "\n | 15. |   13   |  Drive Motor to Chosen End Switch     |"
+                + "\n | 16. |   1F   |  Request Science Reading              |"
+                + "\n --------------------------------------------------------\n")
             match cmd[0]:
                 case "N"  :
-                    print("\n Now writing Nominal parameters as: "
+                    print("\n Now writing Nominal Motor Drive parameters as: "
                     + "\n     Current : " + nominal_current
                     + "\n     Pwm Rate : " + nominal_pwm_rate
                     + "\n     Current : " + nominal_speed
                     + "\n     Current : " + nominal_pwm_duty)
                     output = "".join("0A" + nominal_current + nominal_pwm_rate + nominal_speed + nominal_pwm_duty)
+                case "G"  :
+                    print("\n Now writing Nominal Guard parameters as: "
+                    + "\n     Recirculation : " + nominal_recirc
+                    + "\n     GuardTime : " + nominal_guardtime
+                    + "\n     RecVal : " + nominal_recval
+                    + "\n     Spi Speed : " + nominal_spi)
+                    output = "".join("0B" + nominal_recirc + nominal_guardtime + nominal_recval + nominal_spi)
                 case "00" :
                     print("\n No further parameters required. Now Requesting Housekeeping from Artix 7")
                     output = "".join(cmd) 
@@ -136,32 +154,70 @@ def UI(output):
 
                 case "0A":
                     os.system("cls")
-                    cmd[1] = input("\n Enter Maximum Current in the form XXXX \n" 
-                        + "\n Available Options Are:"
-                        + "\n 1. 6000 Set Max Current to 56.2mA "
-                        + "\n 2. 61A8 Set Max Current to 57.2mA "
-                        + "\n 3. 7000 Set Max Current to 65.6mA "
-                        + "\n 4. 8000 Set Max Current to 74.9mA"
-                        + "\n 5. 9000 Set Max Current to 84.3mA "
-                        + "\n 6. A000 Set Max Current to 93.7mA \n ")
-                    match cmd[1]:
-                        case "6000" | "61A8" | "7000" | "8000" | "9000" | "A000":
-                            print("\n Set Max Current to : " , cmd[1])
-                            cmd[2] = cmd[1][2:4]
-                            cmd[1] = cmd[1][0:2] 
+                    cmd[1] = input("\n Enter Recirculation Value in the Form XX \n" 
+                            + "\n Available Range is 01-0F:\n")
+                    extract = cmd[1]
+                    match extract:                
+                        case extract if b'01' <= bytes(extract, 'utf-8') <=b'0F':
+                            print("\n Set Recirculation to : " , cmd[1])
                         case _:
                             print("\n Not a valid input, please Try Again\n")
+
+                    cmd[2] = input("\n Enter Guard Time in the form XXXX \n" 
+                        + "\n Available Range is 0000 - F000\n")
+                    extract = cmd[1]
+                    match extract:                
+                        case extract if b'0001' <= bytes(extract, 'utf-8') <=b'F000':
+                            print("\n Setting Mechanism Board Current Guard Time :" , cmd[2])
+                            cmd[3] = cmd[2][2:4]
+                            cmd[2] = cmd[2][0:2]
+                            
+                        case _:
+                            print("\n Not a valid input, please Try Again\n")
+
+                    cmd[4] = input("\n Enter the RecVal \n" 
+                                    + "\n Available Range 00-FF\n ")
+                    extract = cmd[4]
+                    match extract:                
+                        case extract if b'01' <= bytes(extract, 'utf-8') <=b'FF':
+                            print("\n Set RecVal to : " , cmd[4])
+                        case _:
+                            print("\n Not a valid input, please Try Again\n") 
+
+                    cmd[5] = input("\n Enter SPI Speed in the form XXXX \n" 
+                            + "\n Available Range is 0000 - 000F\n")
+                    extract = cmd[5]
+                    match extract:                
+                        case extract if b'0001' <= bytes(extract, 'utf-8') <=b'000F':
+                            print("\n Setting Mechanism Board SPI Speed :" , cmd[5])
+                            cmd[6] = cmd[5][2:4]
+                            cmd[5] = cmd[5][0:2]
+                    print("\n Now writing Motor Drive parameters as: "
+                    + "\n     Current : " + nominal_current
+                    + "\n     Pwm Rate : " + nominal_pwm_rate
+                    + "\n     Current : " + nominal_speed
+                    + "\n     Current : " + nominal_pwm_duty)                                
+                    output = "".join(cmd)                 
+                  
+                case "0B":
+                    os.system("cls")
+                    cmd[1] = input("\n Enter Maximum Current in the form XXXX \n" 
+                        + "\n Available Range is 0000 - F000\n")
+                    extract = cmd[1]
+                    match extract:                
+                        case extract if b'0001' <= bytes(extract, 'utf-8') <=b'F000':
+                            print("\n Setting Mechanism Board Current :" , cmd[1])
+                            cmd[2] = cmd[1][2:4]
+                            cmd[1] = cmd[1][0:2]
                             
                     cmd[3] = input("\n Enter PWM Rate in the form XXXX \n" 
-                            + "\n Available Options Are:"                            
-                            + "\n 1. 0006 Set PWM Rate to 35.9μs "
-                            + "\n 2. 000B Set PWM Rate to 61.44μs "
-                            + "\n 3. 000C Set PWM Rate to 66.56μs \n")
-                    match cmd[3]:
-                        case ("0006" | "000B" | "000C"):
-                            print("\n Set PWM Rate to : " , cmd[3])
+                            + "\n Available Range is 0000 - 000F\n")
+                    extract = cmd[3]
+                    match extract:                
+                        case extract if b'0001' <= bytes(extract, 'utf-8') <=b'000F':
+                            print("\n Setting Mechanism Board PWM Rate :" , cmd[3])
                             cmd[4] = cmd[3][2:4]
-                            cmd[3] = cmd[3][0:2] 
+                            cmd[3] = cmd[3][0:2]
                         case _:
                             print("\n Not a valid input, please Try Again\n")
                             
@@ -175,17 +231,19 @@ def UI(output):
                             print("\n Not a valid input, please Try Again\n")
                             
                     cmd[6] = input("\n Enter the PWM Duty\n" 
-                                    + "\n Available Options Are:"                            
-                                    + "\n 1. 34 Set PWM Duty to 20% "
-                                    + "\n 2. 7F Set PWM Duty to 50% ")
-                    match cmd[6]:
-                        case "34":
-                            print("\n Set PWM Duty to 20%")
-                        case "7F":                    
-                            print("\n Set PWM Duty to 50%")
+                                    + "\n Available Range 00-FF\n ")
+                    extract = cmd[6]
+                    match extract:                
+                        case extract if b'01' <= bytes(extract, 'utf-8') <=b'FF':
+                            print("\n Set PWM Duty to : " , cmd[6])
                         case _:
-                            print("\n Not a valid input, please Try Again\n")                            
-                    output = "".join(cmd)            
+                            print("\n Not a valid input, please Try Again\n")
+                    print("\n Now writing Guard parameters as: "
+                    + "\n     Recirculation : " + cmd[1]
+                    + "\n     GuardTime : " + cmd[2]
+                    + "\n     RecVal : " + cmd[4]
+                    + "\n     Spi Speed : " + cmd[5])                                    
+                    output = "".join(cmd)        
 
                 case "10":
                         os.system('cls')

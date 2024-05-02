@@ -6,7 +6,7 @@
 #--------------------------Module Imports---------------------------#
 from crc8Function import crc8Calculate
 import serial
-import os
+import os8
 import uart_comms
 from time import sleep
 from timer import load
@@ -19,7 +19,7 @@ port=""
 inputCmd = ""
 response =""
 #---------------------FPGA Boot and Connect-------------------------#
-port = serial.Serial(port = "COM6",                                                    #Serial Port Initialisation
+port = serial.Serial(port = "COM7",                                                    #Serial Port Initialisation
                     baudrate=115200,
                     bytesize = serial.EIGHTBITS,
                     parity = serial.PARITY_ODD,
