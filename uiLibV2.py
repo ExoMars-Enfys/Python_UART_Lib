@@ -2,10 +2,10 @@ import os
 def UI(output):
     nominal_current = "61A8"
     nominal_pwm_rate = "0006"
-    nominal_speed = "04"
-    nominal_pwm_duty = "7F"
-    nominal_recirc = "0F"
-    nominal_guardtime = "00FA"
+    nominal_speed = "08"
+    nominal_pwm_duty = "FF"
+    nominal_recirc = "7F"
+    nominal_guardtime = "0064"
     nominal_recval = "38"
     nominal_spi = "0005"
 
@@ -23,24 +23,25 @@ def UI(output):
             cmd[0] = input("\nEnter the Command ID\n" 
                 + "\nAvailable Options: " 
                 + "\n --------------------------------------------------------"
-                + "\n | No: | CMD ID | Command Description                   |"
+                + "\n | CMD ID | Command Description                   |"
                 + "\n --------------------------------------------------------"
-                + "\n | 1.  |   N    | Initialise Nominal Motor Drive Values |"
-                + "\n | 2.  |   G    | Initialise Nominal Guard Values       |"
-                + "\n | 3.  |   00   |  Request Housekeeping                 |"
-                + "\n | 4.  |   01   |  Clear Errors                         |"
-                + "\n | 5.  |   04   |  Power Controls                       |"
-                + "\n | 6.  |   05   |  Heater Controls                      |"
-                + "\n | 7.  |   06   |  Set Mechanism SP                     |"
-                + "\n | 8.  |   07   |  Set Detector SP                      |"
-                + "\n | 9.  |   0A   |  Set Motor Drive Parameters           |"
-                + "\n | 10. |   0B   |  Set Motor Drive Guards               |"
-                + "\n | 11. |   0C   |  Set Motor Monitor Limits             |"
-                + "\n | 12. |   10   |  Move Motor Forwards                  |"
-                + "\n | 13. |   11   |  Move Motor Backwards                 |"
-                + "\n | 14. |   12   |  Move Motor to Absolute Position      |"
-                + "\n | 15. |   13   |  Drive Motor to Chosen End Switch     |"
-                + "\n | 16. |   1F   |  Request Science Reading              |"
+                + "\n |   N    | Initialise Nominal Motor Drive Values |"
+                + "\n |   G    | Initialise Nominal Guard Values       |"
+                + "\n |   00   |  Request Housekeeping                 |"
+                + "\n |   01   |  Clear Errors                         |"
+                + "\n |   04   |  Power Controls                       |"
+                + "\n |   05   |  Heater Controls                      |"
+                + "\n |   06   |  Set Mechanism SP                     |"
+                + "\n |   07   |  Set Detector SP                      |"
+                + "\n |   0A   |  Set Motor Drive Parameters           |"
+                + "\n |   0B   |  Set Motor Drive Guards               |"
+                + "\n |   0C   |  Set Motor Monitor Limits             |"
+                + "\n |   10   |  Move Motor Forwards                  |"
+                + "\n |   11   |  Move Motor Backwards                 |"
+                + "\n |   12   |  Move Motor to Absolute Position      |"
+                + "\n |   13   |  Drive Motor to Chosen End Switch     |"
+                + "\n |   15   |  Halt all Motor Movement              |"
+                + "\n |   1F   |  Request Science Reading              |"
                 + "\n --------------------------------------------------------\n")
             match cmd[0]:
                 case "N"  :
@@ -307,6 +308,11 @@ def UI(output):
                                 case _:
                                     print("\n Not a valid input, please Try Again\n")
                             output = "".join(cmd)    
+                case "15" :
+                    print("\n -------- MOTOR HALTED! -------- \n")
+                    cmd[1] = "00"
+                    cmd[6] = "00"
+                    output = "".join(cmd)
 
                 case "1F":
                     os.system('cls')
