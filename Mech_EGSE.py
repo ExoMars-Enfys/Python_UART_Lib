@@ -4,22 +4,19 @@
 #-------------------Giorgos Kollakides - MSSL-----------------------#
 
 #--------------------------Module Imports---------------------------#
-from crc8Function import crc8Calculate
 import serial
-import os8
-import uart_comms
 from time import sleep
-from timer import load
 from uiLibV2 import UI
+from uiLibV2 import Freewill
 from typewriter import typewrite
-from binascii import unhexlify
 #-------------------------Initialisation----------------------------#
 output = ""
 port=""
 inputCmd = ""
 response =""
+speed = 0.005
 #---------------------FPGA Boot and Connect-------------------------#
-port = serial.Serial(port = "COM7",                                                    #Serial Port Initialisation
+port = serial.Serial(port = "COM4",                                                    #Serial Port Initialisation
                     baudrate=115200,
                     bytesize = serial.EIGHTBITS,
                     parity = serial.PARITY_ODD,
@@ -29,49 +26,34 @@ port.flushOutput()                                                              
 port.flushInput()
 #-------------------------Main Function-----------------------------#
 def main():
-    typewrite("----------------------------------------------\n---ExoMars Rosalind Franklin Rover - Enfys---\n-----Mech Board Artix 7 CMD Interpreter-----\n----------Giorgos Kollakides - MSSL---------\n\n\n")
-    typewrite("\n----------Welcome. Now starting EGSE Program---------")
-    sleep(1)
+    print("----------------------------------------------\n---ExoMars Rosalind Franklin Rover - Enfys---\n-----Mech Board Artix 7 CMD Interpreter-----\n----------Giorgos Kollakides - MSSL---------\n\n")
+    typewrite("\n----------Welcome. Now starting EGSE Program---------\n",speed)
+    sleep(0.3)
     def mainLoop():
-        cmdInput = UI(output)
-        typewrite(text = ("\n You have chosen the following command : ",cmdInput))
-        typewrite("\n Now parsing and adding crc8 parity frame at the end of the packet\n")
-        HashedInput = crc8Calculate(cmdInput)    
-        load(0.05)
-        uart_comms.uart_Send(HashedInput,port)    
-        load(0.05)
-        uart_comms.uart_Receive(response,port)
-        # load(10)
-        sleep(1)
-        inputCmd = input("\n Would you like to run another test? Y/N \n \n")
-        match inputCmd:
-            case "Y":
-                mainLoop()
-            case "N" :
-                inputCmd = input("\n Would you like to Exit the program? Y/N \n \n")
-                match inputCmd:
-                    case "Y":
-                        typewrite("\n Now exiting. ~~~Goodbye~~~")
+        startupcmd = input("\n Please choose the type of run you would like to carry out"
+                       +"\n Available options are: "
+                       +"\n 1. Run Free-Will Commands"
+                       +"\n 2. Run Testbench Sequences"
+                       +"\n 0. Exit Program\n")
+        match startupcmd :
+            case "1" :
+                Freewill(port)
+            case "2":
+                print("Do things here")
+            case "0" :
+                exit_flag = input("\n Are you sure you want to exit? Y/N")
+                match exit_flag:
+                    case"Y":
+                        print("~~~Goodbye~~~")
                         exit()
-                    case "N" :
-                        typewrite("\n Restarting Program")
-                        main()
-                    case _:
-                        print("\n Not a valid input, please Try Again\n")
+                    case"N":
+                        UI(output)
             case _:
                 print("\n Not a valid input, please Try Again\n")
+        sleep(1)
         return
-    
-    inputCmd = input("\n Would you like to initialise the UART connection to ARTIX 7? Y/N \n \n")
-    match inputCmd:
-        case "Y":
-            uart_comms.uart_openport(port)
-            mainLoop()
-        case "N" :
-            typewrite("\n Restarting Program")
-            main()
-        case _:
-            print("\n Not a valid input, please Try Again\n")
+    mainLoop()
     return
+   
 while(1):
     main()                    

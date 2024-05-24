@@ -3,7 +3,7 @@ import os
 from timer import load
 from typewriter import typewrite
 port = ""
-
+speed = 0.005
 
 def uart_openport(port):
     match port:
@@ -15,8 +15,8 @@ def uart_openport(port):
                 "\n---Parity : ",port.parity,
                 "\n---Timeout : ",port.timeout," Seconds")
         case port if  port.is_open == False:
-            typewrite(text = ("\n Port ", port.portstr, " failed to open!"))
-            typewrite("\n Now Retrying to Initialise port")
+            typewrite(text = ("\n Port ", port.portstr, " failed to open!"),speed=0.005)
+            typewrite("\n Now Retrying to Initialise port",speed)
             uart_openport(port)
     return port
 
