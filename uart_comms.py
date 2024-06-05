@@ -28,6 +28,6 @@ def uart_Send (HashedInput,port):
     return
        
 def uart_Receive(response,port) :
-    response = port.read(42)                                             #Read the Response from the Artix7
+    response = port.read(50)                                             #Read the Response from the Artix7
     print("\n Response from Artix 7 :", response.hex())                  #Output the Response from the Artix 7 to the user
     return response

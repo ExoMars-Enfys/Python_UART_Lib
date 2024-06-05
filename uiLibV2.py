@@ -3,13 +3,14 @@ import uart_comms
 from typewriter import typewrite
 from timer import load
 from crc8Function import crc8Calculate
+from hk import Housekeeping_Parser
 output = ""
 port=""
 inputCmd = ""
 response =""
 speed = 0.005
 
-def UI(output):
+def UI(output,hk):
     nominal_current = "61A8"
     nominal_pwm_rate = "0006"
     nominal_speed = "08"
@@ -63,7 +64,8 @@ def UI(output):
             output = "".join("0B" + nominal_recirc + nominal_guardtime + nominal_recval + nominal_spi)
         case "00" :
             print("\n No further parameters required. Now Requesting Housekeeping from Artix 7")
-            output = "".join(cmd) 
+            output = "".join(cmd)
+            hk = True
             
         case "01" :
             print("\n No further parameters required. Now Clearing all Errors on Artix 7")
@@ -364,16 +366,19 @@ def UI(output):
                     print("\n Not a valid input, please Try Again\n") 
                     UI(output) 
 
-    return (output)
+    return (output,hk)
 
-def Freewill(port):
-    cmdInput = UI(output)
-    typewrite(text = ("\n You have chosen the following command : ",cmdInput),speed=0.005)
-    typewrite("\n Now parsing and adding crc8 parity frame at the end of the packet\n",speed = 0.005)
+def Freewill(port,response,hk):
+    cmdInput,hk = UI(output,hk)
+    typewrite(text = ("\n You have chosen the following command : "+ cmdInput),speed=0.005)
+    typewrite("\n Now parsing and adding crc8 parity frame at the end of the packet\n" ,speed = 0.005)
     HashedInput = crc8Calculate(cmdInput)    
     load(0.05)
     uart_comms.uart_Send(HashedInput,port)    
     load(0.05)
-    uart_comms.uart_Receive(response,port)
-    Freewill(port)
+    response = uart_comms.uart_Receive(response,port)
+    print(response)
+    if hk == True:
+        Housekeeping_Parser(response)
+    # Freewill(port,response,hk)
     return

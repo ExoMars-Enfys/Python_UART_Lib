@@ -37,7 +37,7 @@ def main():
                        +"\n 0. Exit Program\n")
         match startupcmd :
             case "1" :
-                Freewill(port)
+                Freewill(port,response,hk=False)
             case "2":
                 print("Do things here")
             case "0" :
