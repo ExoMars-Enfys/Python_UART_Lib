@@ -22,7 +22,8 @@ def Housekeeping_Parser(response):
         , "\n |       14      | Motor RecVal             |", HK_Reading[14].hex()
         , "\n |     15--16    | Motor SPIspSel           |", HK_Reading[15].hex(), HK_Reading[16].hex()
         , "\n |     17--18    | Motor Current            |", HK_Reading[17].hex(), HK_Reading[18].hex()
-        , "\n |       19      | Motor Error Mask & Speed |", HK_Reading[19].hex()
+        , "\n |       19      | Motor  Speed             |", HK_Reading[19].hex()
+        , "\n |       20      | Motor Error Mask         |", HK_Reading[20].hex()
         , "\n --------------------------------------------------------\n")
     return
     

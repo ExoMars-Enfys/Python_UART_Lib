@@ -24,7 +24,7 @@ def uart_Send (HashedInput,port):
     print("\nAttempting to Write to Artix 7")
     load(0.005)  
     cmdsent = port.write(HashedInput)            
-    print ("\n Now Sending Packet : ", HashedInput, " of size ", cmdsent)
+    print ("\n Now Sending Packet : ", HashedInput.hex(), " of size ", cmdsent)
     return
        
 def uart_Receive(response,port) :
