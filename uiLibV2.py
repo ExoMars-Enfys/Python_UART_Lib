@@ -398,3 +398,4 @@ def Sequences(port):
             uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
             uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
             stepper_Sequence(response,port,i_Range = 134, speed = 0.03, Steps = "0040")
+            print("\n Now Finished Test Sequence \n")
