@@ -6,8 +6,12 @@
 #--------------------------Module Imports---------------------------#
 import serial
 from time import sleep
+from timer import load
+from timer import progressbar_move
 from uiLibV2 import UI
 from uiLibV2 import Freewill
+from uiLibV2 import Sequences
+from uart_comms import uart_Packager
 from typewriter import typewrite
 #-------------------------Initialisation----------------------------#
 output = ""
@@ -16,7 +20,7 @@ inputCmd = ""
 response =""
 speed = 0.005
 #---------------------FPGA Boot and Connect-------------------------#
-port = serial.Serial(port = "COM7",                                                    #Serial Port Initialisation
+port = serial.Serial(port = "COM4",                                                    #Serial Port Initialisation
                     baudrate=115200,
                     bytesize = serial.EIGHTBITS,
                     parity = serial.PARITY_ODD,
@@ -28,7 +32,7 @@ port.flushInput()
 def main():
     print("----------------------------------------------\n---ExoMars Rosalind Franklin Rover - Enfys---\n-----Mech Board Artix 7 CMD Interpreter-----\n----------Giorgos Kollakides - MSSL---------\n\n")
     typewrite("\n----------Welcome. Now starting EGSE Program---------\n",speed)
-    sleep(0.3)
+    load(0.1)
     def mainLoop():
         startupcmd = input("\n Please choose the type of run you would like to carry out"
                        +"\n Available options are: "
@@ -37,9 +41,20 @@ def main():
                        +"\n 0. Exit Program\n")
         match startupcmd :
             case "1" :
-                Freewill(port,response,hk=False)
+                Freewill(port,hk=False)
             case "2":
-                print("Do things here")
+                motorpos = input("\n---Is the Motor currently positioned at the outer stop? (Y/N)---\n")
+                match motorpos:
+                    case "Y":
+                        Sequences(port)
+                    case "N":
+                        typewrite("\n----------Now Resetting Motor for start of test sequencing---------\n",speed)
+                        uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
+                        sleep(0.05)
+                        uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to Outer Stop
+                        progressbar_move(i_Range = 26,speed = 1)
+                        Sequences(port)
+            
             case "0" :
                 exit_flag = input("\n Are you sure you want to exit? Y/N")
                 match exit_flag:

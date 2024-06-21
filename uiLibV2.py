@@ -1,9 +1,10 @@
 import os
-import uart_comms
+from uart_comms import uart_Packager
 from typewriter import typewrite
-from timer import load
-from crc8Function import crc8Calculate
-from hk import Housekeeping_Parser
+from timer import progressbar_move
+from time import sleep
+from timer import stepper_Sequence
+
 output = ""
 port=""
 inputCmd = ""
@@ -50,7 +51,7 @@ def UI(output,hk):
         + "\n |   13   |  Drive Motor to Chosen End Switch     |"
         + "\n |   15   |  Halt all Motor Movement              |"
         + "\n |   1F   |  Request Science Reading              |"
-        + "\n --------------------------------------------------------\n")
+        + "\n ------------------------------------------------------ --\n")
     match cmd[0]:
         case "N"  :
             print("\n Now writing Nominal Motor Drive parameters as: "
@@ -370,17 +371,30 @@ def UI(output,hk):
 
     return (output,hk)
 
-def Freewill(port,response,hk):
+def Freewill(port,hk):
     cmdInput,hk = UI(output,hk)
-    typewrite(text = ("\n You have chosen the following command : "+ cmdInput),speed=0.005)
-    typewrite("\n Now parsing and adding crc8 parity frame at the end of the packet\n" ,speed = 0.005)
-    HashedInput = crc8Calculate(cmdInput)    
-    load(0.05)
-    uart_comms.uart_Send(HashedInput,port)    
-    load(0.05)
-    response = uart_comms.uart_Receive(response,port)
-    print(response)
-    if hk == True:
-        Housekeeping_Parser(response)
-    # Freewill(port,response,hk)
-    return
+    uart_Packager(response,port,hk,cmdInput)
+    
+
+def Sequences(port):    
+    sequence = input("\nSelect which sequence you would like to carry out\n" 
+                            + "\n Available Options Are:"
+                            + "\n 1. Full Sweep at Full Speed * 5 times "
+                            + "\n 2. Full Sweep in steps of 200μm with 300ms wait between each stop\n")
+    match sequence:
+        case "1":
+            uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
+            uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
+            for i in range(0,5):
+                print("\nAttempt " , i + 1 , " of 5 \n")
+                print("Driving to Base\n")
+                uart_Packager(response,port,hk = False,cmdInput= "10210000000000") #Driving to base stop
+                progressbar_move(i_Range = 26, speed = 1)
+                print("Driving to Outer\n")
+                uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to outer stop 
+                progressbar_move(i_Range = 26, speed = 1)
+            print("\n Now Finished Test Sequence \n")
+        case "2":
+            uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
+            uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
+            stepper_Sequence(response,port,i_Range = 134, speed = 0.03, Steps = "0040")
