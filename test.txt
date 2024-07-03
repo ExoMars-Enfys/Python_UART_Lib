@@ -1,0 +1,10 @@
+HK Data File for test : test
+HK Packet : [b'\x07', b'\x1c', b'\x00', b'`', b'\x00', b'\x00', b'!', b'\x00', b'e', b'\x00', b'd', b'\xff', b'\x00', b'\x06', b'8', b'\x00', b'\x05', b'a', b'\xa8', b'\xff', b'\xb0', b'\xb1']
+
+Sweep #1 Outer to Base
+HK Packet : [b'\x07', b'\x1d', b'\x00', b'`', b'\x00', b'\x00', b'!', b'\x00', b'e', b'\x00', b'd', b'\xff', b'\x00', b'\x06', b'8', b'\x00', b'\x05', b'a', b'\xa8', b'\xff', b'\xb0', b'\xb1']
+Base to Outer
+HK Packet : [b'\x07', b'\xa5', b'\x00', b'`', b'\x00', b'\x00', b'\xdf', b'\x00', b'e', b'\x00', b'd', b'\xff', b'\x00', b'\x06', b'8', b'\x00', b'\x05', b'a', b'\xa8', b'\xff', b'\xb0', b'\xb1']
+
+Sweep #2 Outer to Base
+HK Packet : [b'\x07', b'\xa6', b'\x00', b'`', b'\x00', b'\x00', b'\xdf', b'\x00', b'e', b'\x00', b'd', b'\xff', b'\x00', b'\x06', b'8', b'\x00', b'\x05', b'a', b'\xa8', b'\xff', b'\xb0', b'\xb1']

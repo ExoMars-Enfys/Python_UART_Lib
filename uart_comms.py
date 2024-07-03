@@ -4,6 +4,7 @@ from time import sleep
 from typewriter import typewrite
 from hk import Housekeeping_Parser
 from crc8Function import crc8Calculate
+
 port = ""
 speed = 0.005
 
@@ -45,4 +46,4 @@ def uart_Packager(response,port,hk,cmdInput):
     #print(response)
     if hk == True:
         Housekeeping_Parser(response)
-    return
+    return response

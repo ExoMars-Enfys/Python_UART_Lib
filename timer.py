@@ -16,15 +16,3 @@ def progressbar_move(i_Range,speed):
         for i in range(i_Range):
             sleep(speed)
             bar()
-
-def stepper_Sequence(response,port,i_Range, speed,  Steps):
-    for i in range(5):
-        print("\nAttempt " , i + 1 , " of 5 \n")
-        with alive_bar(i_Range) as bar:   # default setting
-            for i in range(i_Range):
-                sleep(speed)
-                bar()
-                uart_Packager(response,port,hk = False,cmdInput= "10" + Steps + "00000000") #Driving to base stop
-        typewrite("\n----------Now Resetting Motor for start of test sequencing---------\n",speed)
-        uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to base stop
-        sleep(26)

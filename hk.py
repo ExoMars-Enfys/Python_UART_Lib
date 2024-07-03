@@ -1,7 +1,10 @@
-def Housekeeping_Parser(response):
+
+from binascii import unhexlify
+def Housekeeping_Parser(response,filename):
     HK_Reading = ["00"] *(int(len(response)/2)+1)
     for i in range(0, int(len(response)/2)+1): 
         HK_Reading[i] = response[i:i+1]
+        
         # print(HK_Reading[i].hex(), i,"\n""\n")
     # print(response.hex(), type(response))
     # print(HK_Reading)
@@ -26,7 +29,12 @@ def Housekeeping_Parser(response):
         , "\n |       20      | Motor Error Mask         |", HK_Reading[20].hex()
         , "\n --------------------------------------------------------\n")
     return
-    
-# while(1):
-#     Housekeeping_Parser(response = "07010060000000006500000000000000000000f0b0b1b2b3b40fff0fff0fff0fff0fff0fff0fff0fffa3")
-#     exit()
+
+def Housekeeping_stream(response,filename):
+    HK_Reading = ["00"] *(int(len(response)/2)+1)
+    for i in range(0, int(len(response)/2)+1): 
+        HK_Reading[i] = response[i:i+1]
+    with open(filename + ".txt",'a') as file:
+            file.write("\nHK Packet : ")
+            file.write(str(HK_Reading))
+    return

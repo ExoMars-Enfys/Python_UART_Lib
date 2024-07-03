@@ -3,12 +3,18 @@ from uart_comms import uart_Packager
 from typewriter import typewrite
 from timer import progressbar_move
 from time import sleep
-from timer import stepper_Sequence
+from fileHandler import fileWriter
+from hk import Housekeeping_stream
+
+from progress.spinner import MoonSpinner
+from alive_progress import alive_bar
+#from video_handler import videostart
 
 output = ""
 port=""
 inputCmd = ""
 response =""
+HK_Reading = ""
 speed = 0.005
 
 def UI(output,hk):
@@ -371,9 +377,10 @@ def UI(output,hk):
 
     return (output,hk)
 
-def Freewill(port,hk):
+def Freewill(port,hk):    
+    filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
     cmdInput,hk = UI(output,hk)
-    uart_Packager(response,port,hk,cmdInput)
+    uart_Packager(filename,response,port,hk,cmdInput)
     
 
 def Sequences(port):    
@@ -383,19 +390,52 @@ def Sequences(port):
                             + "\n 2. Full Sweep in steps of 200μm with 300ms wait between each stop\n")
     match sequence:
         case "1":
+            filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
+            fileWriter(filename,"HK Data File for test : ")
+            fileWriter(filename,filename)
             uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
             uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
+            
+            fileWriter(filename,"\n\n\nHK Packet before Movement : ")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+
             for i in range(0,5):
                 print("\nAttempt " , i + 1 , " of 5 \n")
+                fileWriter(filename,"\n\nSweep #")
+                fileWriter(filename,str(i+1))
+                fileWriter(filename," Outer to Base")
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
                 print("Driving to Base\n")
                 uart_Packager(response,port,hk = False,cmdInput= "10210000000000") #Driving to base stop
                 progressbar_move(i_Range = 26, speed = 1)
                 print("Driving to Outer\n")
-                uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to outer stop 
+                fileWriter(filename,"\nBase to Outer")
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+                uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to outer stop
                 progressbar_move(i_Range = 26, speed = 1)
+
             print("\n Now Finished Test Sequence \n")
         case "2":
+            filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
+            fileWriter(filename,"HK Data File for test : ")
+            fileWriter(filename,filename)
             uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
             uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
-            stepper_Sequence(response,port,i_Range = 134, speed = 0.03, Steps = "0040")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            for i in range(5):
+                print("\nAttempt " , i + 1 , " of 5 \n")
+                fileWriter(filename,"\n\nSweep #")
+                fileWriter(filename,str(i+1))
+                fileWriter(filename," Outer to Base")
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+                with alive_bar(i) as bar:   # default setting
+                    for i in range(134):
+                        sleep(0.03)
+                        bar()
+                        uart_Packager(response,port,hk = False,cmdInput= "10004000000000") #Driving to base stop
+                typewrite("\n----------Now Resetting Motor for start of test sequencing---------\n",speed)
+                uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to base stop
+                sleep(26)                
+                fileWriter(filename,"\nBase to Outer")
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
             print("\n Now Finished Test Sequence \n")
