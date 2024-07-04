@@ -2,6 +2,7 @@ import os
 from uart_comms import uart_Packager
 from typewriter import typewrite
 from timer import progressbar_move
+from timer import load
 from time import sleep
 from fileHandler import fileWriter
 from hk import Housekeeping_stream
@@ -282,7 +283,7 @@ def UI(output,hk):
                                 + "\n Available Range is: 0001 - 20EF\n")
                 extract = cmd[1]
                 match extract:                
-                    case extract if b'0001' <= bytes(extract, 'utf-8') <=b'20EF':
+                    case extract if b'0001' <= bytes(extract, 'utf-8') <=b'FFFF':
                         print("\n Moving Forward" , cmd[1], "steps")
                         cmd[2] = cmd[1][2:4]
                         cmd[1] = cmd[1][0:2]
@@ -297,7 +298,7 @@ def UI(output,hk):
                                 + "\n Available Range is: 0001 - 20EF\n")
                 extract = cmd[1]
                 match extract:                
-                    case extract if b'0001' <= bytes(extract, 'utf-8') <=b'20EF':
+                    case extract if b'0001' <= bytes(extract, 'utf-8') <=b'FFFF':
                         print("\n Moving Backwards" , cmd[1], "steps")
                         cmd[2] = cmd[1][2:4]
                         cmd[1] = cmd[1][0:2]
@@ -387,7 +388,8 @@ def Sequences(port):
     sequence = input("\nSelect which sequence you would like to carry out\n" 
                             + "\n Available Options Are:"
                             + "\n 1. Full Sweep at Full Speed * 5 times "
-                            + "\n 2. Full Sweep in steps of 200μm with 300ms wait between each stop\n")
+                            + "\n 2. Full Sweep in steps of 200μm with 300ms wait between each stop"
+                            + "\n 3. Back and Forth Sequence \n")
     match sequence:
         case "1":
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
@@ -400,6 +402,7 @@ def Sequences(port):
             Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
 
             for i in range(0,5):
+                load(0.2)
                 print("\nAttempt " , i + 1 , " of 5 \n")
                 fileWriter(filename,"\n\nSweep #")
                 fileWriter(filename,str(i+1))
@@ -407,12 +410,13 @@ def Sequences(port):
                 Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
                 print("Driving to Base\n")
                 uart_Packager(response,port,hk = False,cmdInput= "10210000000000") #Driving to base stop
-                progressbar_move(i_Range = 26, speed = 1)
+                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
+                load(0.2)
                 print("Driving to Outer\n")
                 fileWriter(filename,"\nBase to Outer")
                 Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
                 uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to outer stop
-                progressbar_move(i_Range = 26, speed = 1)
+                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
 
             print("\n Now Finished Test Sequence \n")
         case "2":
@@ -428,14 +432,46 @@ def Sequences(port):
                 fileWriter(filename,str(i+1))
                 fileWriter(filename," Outer to Base")
                 Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-                with alive_bar(i) as bar:   # default setting
-                    for i in range(134):
-                        sleep(0.03)
-                        bar()
-                        uart_Packager(response,port,hk = False,cmdInput= "10004000000000") #Driving to base stop
+                uart_Packager(response,port,hk = False,cmdInput= "10004000000000") #Driving to base stop
+                progressbar_move(response,port,filename,i_Range = 134,speed = 0.3)
                 typewrite("\n----------Now Resetting Motor for start of test sequencing---------\n",speed)
                 uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to base stop
                 sleep(26)                
                 fileWriter(filename,"\nBase to Outer")
                 Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
             print("\n Now Finished Test Sequence \n")
+        case "3":
+            filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
+            fileWriter(filename,"HK Data File for test : ")
+            fileWriter(filename,filename)
+            uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
+            uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
+            
+            fileWriter(filename,"\n\n\nHK Packet before Movement : ")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            fileWriter(filename,"\n\nForwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nBackwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nForwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nBackwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nForwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nBackwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            
+       
