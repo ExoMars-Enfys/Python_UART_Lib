@@ -1,6 +1,6 @@
 
 from binascii import unhexlify
-def Housekeeping_Parser(response,filename):
+def Housekeeping_Parser(response):
     HK_Reading = ["00"] *(int(len(response)/2)+1)
     for i in range(0, int(len(response)/2)+1): 
         HK_Reading[i] = response[i:i+1]

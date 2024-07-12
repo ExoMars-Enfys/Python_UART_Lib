@@ -271,7 +271,9 @@ def UI(output,hk):
                     + "\n     Spi Speed : " + cmd[5])                                   
             output = "".join(cmd)                 
             
-       
+        case "0C" :
+            print("\n No further parameters required. Now Clearing all Errors on Artix 7")
+            output = "0C21002100064".join(cmd) 
 
         case "0D" :
             print("\n No further parameters required. Now Clearing all Errors on Artix 7")
@@ -324,11 +326,12 @@ def UI(output,hk):
 
         case "13":
             os.system('cls')
-            cmd[1] = input("\nSelect which End stop to move to\n" 
-                            + "\n Available Options Are:"
-                            + "\n 1. 00 Move to Outer20EF End stop "
-                            + "\n 2. 01 Move to Inner End stop"
-                            + "\n 3. 02 Move to Parked Position\n")
+            cmd[1] = input("\n Enter homing parameters"
+                           + "xxx - 1xx - Direction, x1x - Calibration, xx1 Homing"
+                           + "\n05 home to base"
+                           + "\n01 home to outer"
+                           + "\n07 home to base with Cal"
+                           + "\n03 home to outer with Cal")
             # match cmd[1]:
             #     case "00":
             #         print("\n Move to Outer End stop ")
@@ -379,9 +382,8 @@ def UI(output,hk):
     return (output,hk)
 
 def Freewill(port,hk):    
-    filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
     cmdInput,hk = UI(output,hk)
-    uart_Packager(filename,response,port,hk,cmdInput)
+    uart_Packager(response,port,hk,cmdInput)
     
 
 def Sequences(port):    
@@ -399,7 +401,7 @@ def Sequences(port):
             uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
             
             fileWriter(filename,"\n\n\nHK Packet before Movement : ")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"))
 
             for i in range(0,5):
                 load(0.2)
@@ -407,7 +409,7 @@ def Sequences(port):
                 fileWriter(filename,"\n\nSweep #")
                 fileWriter(filename,str(i+1))
                 fileWriter(filename," Outer to Base")
-                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"))
                 print("Driving to Base\n")
                 uart_Packager(response,port,hk = False,cmdInput= "10210000000000") #Driving to base stop
                 progressbar_move(response,port,filename,i_Range = 26,speed = 1)
