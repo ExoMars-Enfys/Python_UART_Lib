@@ -7,7 +7,7 @@ from hk import Housekeeping_stream
 
 def load(speed):
     with MoonSpinner('Loading  ') as bar:
-        for i in range(25):
+        for i in range(60):
             sleep(speed)
             bar.next()
 
@@ -18,3 +18,4 @@ def progressbar_move(response,port,filename,i_Range,speed):
             Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
             sleep(speed)
             bar()
+            

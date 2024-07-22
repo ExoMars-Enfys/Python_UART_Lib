@@ -1,11 +1,12 @@
 import os
 from uart_comms import uart_Packager
 from typewriter import typewrite
-from timer import progressbar_move
 from timer import load
 from time import sleep
+from timer  import progressbar_move
 from fileHandler import fileWriter
 from hk import Housekeeping_stream
+from crc8Function import crc8Calculate
 
 from progress.spinner import MoonSpinner
 from alive_progress import alive_bar
@@ -18,18 +19,8 @@ response =""
 HK_Reading = ""
 speed = 0.005
 
-def UI(output,hk):
-    nominal_current = "61A8"
-    nominal_pwm_rate = "0006"
-    nominal_speed = "0F"
-    nominal_pwm_duty = "FF"
-    nominal_recirc = "7F"
-    nominal_guardtime = "0064"
-    nominal_recval = "38"
-    nominal_spi = "0005"
-    absMax = "BEEF"
-    relMax="7530"
-    backoff = "0140"
+def UI(output,hk) :
+    
 
     cmd = ["00"] *7
     exit_flag = ""
@@ -39,9 +30,7 @@ def UI(output,hk):
         + "\n --------------------------------------------------------"
         + "\n | CMD ID | Command Description                   |"
         + "\n --------------------------------------------------------"
-        + "\n |   N    | Initialise Nominal Motor Drive Values |"
-        + "\n |   G    | Initialise Nominal Guard Values       |"
-        + "\n |   L    | Initialise Nominal Limit Values       |"
+        + "\n |   P    | Go to Parked Position                 |"
         + "\n |   00   |  Request Housekeeping                 |"
         + "\n |   01   |  Clear Errors                         |"
         + "\n |   04   |  Power Controls                       |"
@@ -60,28 +49,10 @@ def UI(output,hk):
         + "\n |   1F   |  Request Science Reading              |"
         + "\n ------------------------------------------------------ --\n")
     match cmd[0]:
-        case "N"  :
-            print("\n Now writing Nominal Motor Drive parameters as: "
-            + "\n     Current : " + nominal_current
-            + "\n     Pwm Rate : " + nominal_pwm_rate
-            + "\n     Current : " + nominal_speed
-            + "\n     Current : " + nominal_pwm_duty)
-            output = "".join("0A" + nominal_current + nominal_pwm_rate + nominal_speed + nominal_pwm_duty)
-        case "G"  :
-            print("\n Now writing Nominal Guard parameters as: "
-            + "\n     Recirculation : " + nominal_recirc
-            + "\n     GuardTime : " + nominal_guardtime
-            + "\n     RecVal : " + nominal_recval
-            + "\n     Spi Speed : " + nominal_spi)
-            output = "".join("0B" + nominal_recirc + nominal_guardtime + nominal_recval + nominal_spi)
-        
-        case "L"  :
-            print("\n Now writing Nominal Limit parameters as: "
-            + "\n     Absolute Limit : " + absMax
-            + "\n     Relative Limit : " + relMax
-            + "\n     Back-Off : " + backoff)
-            output = "".join("0C" + absMax + relMax + backoff)
-
+        case "P" : 
+            print("\n Now moving to pasrked position, 5mm from Base Stop ")
+            output = "121B1300000000"
+            
         case "00" :
             print("\n No further parameters required. Now Requesting Housekeeping from Artix 7")
             output = "".join(cmd)
@@ -90,7 +61,7 @@ def UI(output,hk):
         case "01" :
             print("\n No further parameters required. Now Clearing all Errors on Artix 7")
             output = "".join(cmd) 
-
+        
         case "04":
             os.system('cls')
             cmd[1] = input("\n Enter the Power Control Bit Mask\n" 
@@ -105,7 +76,7 @@ def UI(output,hk):
                 case _:
                     print("\n Not a valid input, please Try Again\n")
             output = "".join(cmd)         
-
+       
         case "05":
             os.system('cls')
             cmd[1] = input("\n Enter the Heater Control Bit Mask\n" 
@@ -129,7 +100,7 @@ def UI(output,hk):
                 case _:
                     print("\n Not a valid input, please Try Again\n")
             output = "".join(cmd)    
-
+       
         case "06":
                 os.system('cls')
                 cmd[1] = input("\n Enter the Mechanism Board Off SP in the form XXXX\n" 
@@ -153,7 +124,7 @@ def UI(output,hk):
                     case _:
                         print("\n Not a valid input, please Try Again\n")
                 output = "".join(cmd)  
-
+       
         case "07":
                 os.system('cls')
                 cmd[1] = input("\n Enter the Detector Board Off SP in the form XXXX\n" 
@@ -177,6 +148,7 @@ def UI(output,hk):
                     case _:
                         print("\n Not a valid input, please Try Again\n")
                 output = "".join(cmd)    
+       
         case "0A":
                     os.system("cls")
                     cmd[1] = input("\n Enter Maximum Current in the form XXXX \n" 
@@ -270,11 +242,11 @@ def UI(output,hk):
                     + "\n     RecVal : " + cmd[4]
                     + "\n     Spi Speed : " + cmd[5])                                   
             output = "".join(cmd)                 
-            
+       
         case "0C" :
             print("\n No further parameters required. Now Clearing all Errors on Artix 7")
             output = "0C21002100064".join(cmd) 
-
+        
         case "0D" :
             print("\n No further parameters required. Now Clearing all Errors on Artix 7")
             output = "".join(cmd) 
@@ -386,40 +358,67 @@ def Freewill(port,hk):
     uart_Packager(response,port,hk,cmdInput)
     
 
-def Sequences(port):    
+def Sequences(port):   
+    nominal_current = "61A8"
+    nominal_pwm_rate = "0006"
+    nominal_speed = "0F"
+    nominal_pwm_duty = "FF"
+    nominal_recirc = "7F"
+    nominal_guardtime = "0064"
+    nominal_recval = "38"
+    nominal_spi = "0005"
+    absMax = "2200"
+    relMax="2200"
+    backoff = "0064" 
     sequence = input("\nSelect which sequence you would like to carry out\n" 
                             + "\n Available Options Are:"
                             + "\n 1. Full Sweep at Full Speed * 5 times "
                             + "\n 2. Full Sweep in steps of 200μm with 300ms wait between each stop"
                             + "\n 3. Back and Forth Sequence \n")
     match sequence:
+        case "N"  :
+            print("\n Now writing Nominal Motor Drive parameters as: "
+            + "\n     Current : " + nominal_current
+            + "\n     Pwm Rate : " + nominal_pwm_rate
+            + "\n     Current : " + nominal_speed
+            + "\n     Current : " + nominal_pwm_duty)
+            output = "".join("0A" + nominal_current + nominal_pwm_rate + nominal_speed + nominal_pwm_duty)
+            uart_Packager(response,port,hk = False,cmdInput=output)
+            print("\n Now writing Nominal Guard parameters as: "
+            + "\n     Recirculation : " + nominal_recirc
+            + "\n     GuardTime : " + nominal_guardtime
+            + "\n     RecVal : " + nominal_recval
+            + "\n     Spi Speed : " + nominal_spi)
+            output = "".join("0B" + nominal_recirc + nominal_guardtime + nominal_recval + nominal_spi)
+            uart_Packager(response,port,hk = False,cmdInput=output)
+            print("\n Now writing Nominal Limit parameters as: "
+                + "\n     Absolute Limit : " + absMax
+                + "\n     Relative Limit : " + relMax
+                + "\n     Back-Off : " + backoff)
+            output = "".join("0C" + absMax + relMax + backoff)
+            uart_Packager(response,port,hk = False,cmdInput=output)
         case "1":
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
             fileWriter(filename,"HK Data File for test : ")
             fileWriter(filename,filename)
             uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
             uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
-            
+            uart_Packager(response,port,hk = False,cmdInput= "0C220022000064") #Setting Limits
             fileWriter(filename,"\n\n\nHK Packet before Movement : ")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"))
-
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file
             for i in range(0,5):
-                load(0.2)
+                load(0.0834)
                 print("\nAttempt " , i + 1 , " of 5 \n")
-                fileWriter(filename,"\n\nSweep #")
-                fileWriter(filename,str(i+1))
-                fileWriter(filename," Outer to Base")
-                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"))
+                fileWriter(filename,"\n\nSweep #" + str(i+1))
+                fileWriter(filename,"\n Outer to Base")      
                 print("Driving to Base\n")
-                uart_Packager(response,port,hk = False,cmdInput= "10210000000000") #Driving to base stop
+                uart_Packager(response,port,hk = False,cmdInput= "13050000000000") #Driving to base stop
                 progressbar_move(response,port,filename,i_Range = 26,speed = 1)
-                load(0.2)
+                load(0.0834)
                 print("Driving to Outer\n")
                 fileWriter(filename,"\nBase to Outer")
-                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-                uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to outer stop
+                uart_Packager(response,port,hk = False,cmdInput= "13010000000000") #Driving to outer stop
                 progressbar_move(response,port,filename,i_Range = 26,speed = 1)
-
             print("\n Now Finished Test Sequence \n")
         case "2":
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
@@ -427,21 +426,26 @@ def Sequences(port):
             fileWriter(filename,filename)
             uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
             uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            for i in range(5):
+            uart_Packager(response,port,hk = False,cmdInput= "0C220022000064") #Setting Limits
+            fileWriter(filename,"\n\n\nHK Packet before Movement : ")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file
+            for i in range(0,5):
+                load(0.0834)
                 print("\nAttempt " , i + 1 , " of 5 \n")
-                fileWriter(filename,"\n\nSweep #")
-                fileWriter(filename,str(i+1))
-                fileWriter(filename," Outer to Base")
-                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-                uart_Packager(response,port,hk = False,cmdInput= "10004000000000") #Driving to base stop
-                progressbar_move(response,port,filename,i_Range = 134,speed = 0.3)
-                typewrite("\n----------Now Resetting Motor for start of test sequencing---------\n",speed)
-                uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to base stop
-                sleep(26)                
+                fileWriter(filename,"\n\nSweep #" + str(i+1))
+                fileWriter(filename,"\n Outer to Base")
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file     
+                print("Driving to Base\n")
+                for i in range(132):
+                    uart_Packager(response,port,hk = False,cmdInput= "10004000000000")
+                load(0.0834)
+                print("Driving to Outer\n")
                 fileWriter(filename,"\nBase to Outer")
-                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+                uart_Packager(response,port,hk = False,cmdInput= "13010000000000") #Driving to outer stop
+                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
             print("\n Now Finished Test Sequence \n")
+                
+            
         case "3":
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
             fileWriter(filename,"HK Data File for test : ")
@@ -475,5 +479,38 @@ def Sequences(port):
             Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
             uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
             progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+
+        case "4":
+            filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
+            fileWriter(filename,"HK Data File for test : ")
+            fileWriter(filename,filename)
+            uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
+            uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
             
+            fileWriter(filename,"\n\n\nHK Packet before Movement : ")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            fileWriter(filename,"\n\nForwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nBackwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nForwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nBackwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nForwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+            fileWriter(filename,"\n\nBackwards")
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
+            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
+            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
        

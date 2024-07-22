@@ -1,13 +1,12 @@
 
 from binascii import unhexlify
+from datetime import datetime
+
 def Housekeeping_Parser(response):
     HK_Reading = ["00"] *(int(len(response)/2)+1)
     for i in range(0, int(len(response)/2)+1): 
         HK_Reading[i] = response[i:i+1]
         
-        # print(HK_Reading[i].hex(), i,"\n""\n")
-    # print(response.hex(), type(response))
-    # print(HK_Reading)
     print("\n  Housekeeping Readings: " 
         , "\n --------------------------------------------------------"
         , "\n | Byte Position | Contents Description     | Value |"
@@ -34,7 +33,6 @@ def Housekeeping_stream(response,filename):
     HK_Reading = ["00"] *(int(len(response)/2)+1)
     for i in range(0, int(len(response)/2)+1): 
         HK_Reading[i] = response[i:i+1]
-    with open(filename + ".txt",'a') as file:
-            file.write("\nHK Packet : ")
-            file.write(str(HK_Reading))
+    with open(filename + ".txt",'a') as file:     
+            file.write("\n" + str(HK_Reading) + "  ---  " + datetime.now().strftime("%d-%m-%Y, %H:%M:%S.%f") + "\n")
     return

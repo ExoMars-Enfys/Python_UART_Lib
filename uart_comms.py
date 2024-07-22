@@ -23,27 +23,10 @@ def uart_openport(port):
             uart_openport(port)
     return port
 
-def uart_Send (HashedInput,port):
-    #print("\nAttempting to Write to Artix 7")
-    sleep(0.005)  
-    cmdsent = port.write(HashedInput)            
-   # print ("\n Now Sending Packet : ", HashedInput.hex(), " of size ", cmdsent)
-    return
-       
-def uart_Receive(response,port) :
-    response = port.read(50)                                             #Read the Response from the Artix7
-    #print("\n Response from Artix 7 :", response.hex())                  #Output the Response from the Artix 7 to the user
-    return response
-
 def uart_Packager(response,port,hk,cmdInput):
-    #typewrite(text = ("\n You have chosen the following command : "+ cmdInput),speed=0.005)
-    #typewrite("\n Now parsing and adding crc8 parity frame at the end of the packet\n" ,speed = 0.005)
-    HashedInput = crc8Calculate(cmdInput)    
-    sleep(0.05)
-    uart_Send(HashedInput,port)    
-    sleep(0.05)
-    response = uart_Receive(response,port)
-    #print(response)
+    port.write(crc8Calculate(cmdInput))
+    response = port.read(50)
+    print(response)
     if hk == True:
         Housekeeping_Parser(response)
     return response

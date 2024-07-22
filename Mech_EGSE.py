@@ -7,12 +7,13 @@
 import serial
 from time import sleep
 from timer import load
-from timer import progressbar_move
 from uiLibV2 import UI
 from uiLibV2 import Freewill
 from uiLibV2 import Sequences
 from uart_comms import uart_Packager
 from typewriter import typewrite
+from datetime import datetime
+from timer import progressbar_move
 #-------------------------Initialisation----------------------------#
 output = ""
 port=""
@@ -20,7 +21,7 @@ inputCmd = ""
 response =""
 speed = 0.005
 #---------------------FPGA Boot and Connect-------------------------#
-port = serial.Serial(port = "COM6",                                                    #Serial Port Initialisation
+port = serial.Serial(port = "COM4",                                                    #Serial Port Initialisation
                     baudrate=115200,
                     bytesize = serial.EIGHTBITS,
                     parity = serial.PARITY_ODD,
@@ -32,7 +33,9 @@ port.flushInput()
 def main():
     print("----------------------------------------------\n---ExoMars Rosalind Franklin Rover - Enfys---\n-----Mech Board Artix 7 CMD Interpreter-----\n----------Giorgos Kollakides - MSSL---------\n\n")
     typewrite("\n----------Welcome. Now starting EGSE Program---------\n",speed)
-    load(0.1)
+    print(datetime.now())
+    load(0.0417)
+    print(datetime.now())
     def mainLoop():
         startupcmd = input("\n Please choose the type of run you would like to carry out"
                        +"\n Available options are: "
