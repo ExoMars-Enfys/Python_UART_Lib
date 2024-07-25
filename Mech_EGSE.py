@@ -19,6 +19,7 @@ output = ""
 port=""
 inputCmd = ""
 response =""
+filename = ""
 speed = 0.005
 #---------------------FPGA Boot and Connect-------------------------#
 port = serial.Serial(port = "COM4",                                                    #Serial Port Initialisation
@@ -55,7 +56,7 @@ def main():
                         uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
                         sleep(0.05)
                         uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to Outer Stop
-                        progressbar_move(i_Range = 26,speed = 1)
+                        progressbar_move(response,port,filename,i_Range = 26,speed = 1)
                         Sequences(port)
             
             case "0" :

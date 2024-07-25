@@ -6,10 +6,11 @@ from time import sleep
 from timer  import progressbar_move
 from fileHandler import fileWriter
 from hk import Housekeeping_stream
-from crc8Function import crc8Calculate
-
+from binascii import unhexlify
+from binascii import hexlify
 from progress.spinner import MoonSpinner
 from alive_progress import alive_bar
+from operator import*
 #from video_handler import videostart
 
 output = ""
@@ -369,12 +370,15 @@ def Sequences(port):
     nominal_spi = "0005"
     absMax = "2200"
     relMax="2200"
-    backoff = "0064" 
+    backoff = "00A0" 
+    current_steps = ""
     sequence = input("\nSelect which sequence you would like to carry out\n" 
                             + "\n Available Options Are:"
+                            + "\n N. Assert Nominal Parameters"
                             + "\n 1. Full Sweep at Full Speed * 5 times "
                             + "\n 2. Full Sweep in steps of 200μm with 300ms wait between each stop"
-                            + "\n 3. Back and Forth Sequence \n")
+                            + "\n 3. Back and Forth Sequence "
+                            + "\n 4. Current Test \n")
     match sequence:
         case "N"  :
             print("\n Now writing Nominal Motor Drive parameters as: "
@@ -412,13 +416,13 @@ def Sequences(port):
                 fileWriter(filename,"\n\nSweep #" + str(i+1))
                 fileWriter(filename,"\n Outer to Base")      
                 print("Driving to Base\n")
-                uart_Packager(response,port,hk = False,cmdInput= "13050000000000") #Driving to base stop
-                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
+                uart_Packager(response,port,hk = False,cmdInput= "10219000000000") #Driving to base stop
+                progressbar_move(response,port,filename,i_Range = 26,speed = 0.4)
                 load(0.0834)
                 print("Driving to Outer\n")
                 fileWriter(filename,"\nBase to Outer")
-                uart_Packager(response,port,hk = False,cmdInput= "13010000000000") #Driving to outer stop
-                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
+                uart_Packager(response,port,hk = False,cmdInput= "11219000000000") #Driving to outer stop
+                progressbar_move(response,port,filename,i_Range = 26,speed = 0.4)
             print("\n Now Finished Test Sequence \n")
         case "2":
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
@@ -441,8 +445,8 @@ def Sequences(port):
                 load(0.0834)
                 print("Driving to Outer\n")
                 fileWriter(filename,"\nBase to Outer")
-                uart_Packager(response,port,hk = False,cmdInput= "13010000000000") #Driving to outer stop
-                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
+                uart_Packager(response,port,hk = False,cmdInput= "11219000000000") #Driving to outer stop
+                progressbar_move(response,port,filename,i_Range = 26,speed = 0.3)
             print("\n Now Finished Test Sequence \n")
                 
             
@@ -484,33 +488,25 @@ def Sequences(port):
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
             fileWriter(filename,"HK Data File for test : ")
             fileWriter(filename,filename)
-            uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
-            uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
-            
+            test_current = "0800"
+            uart_Packager(response,port,hk = False,cmdInput= "".join("0A" + test_current + nominal_pwm_rate + nominal_speed + nominal_pwm_duty)) #Setting nominal motor drive parameters
+            uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters            
+            uart_Packager(response,port,hk = False,cmdInput= "0C220022000064") #Setting Limits
             fileWriter(filename,"\n\n\nHK Packet before Movement : ")
             Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            fileWriter(filename,"\n\nForwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nBackwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nForwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nBackwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nForwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nBackwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-       
+            for i in range(10):
+                print("\nAttempting to Move at Current = " + test_current)                
+                print("".join("0A" + test_current + nominal_pwm_rate + nominal_speed + nominal_pwm_duty))
+                uart_Packager(response,port,hk = False,cmdInput= "".join("0A" + test_current + nominal_pwm_rate + nominal_speed + nominal_pwm_duty)) #Setting nominal motor drive parameters
+                uart_Packager(response,port,hk = False,cmdInput="10050000000000")
+                uart_Packager(response,port,hk = True,cmdInput= "00000000000000")           
+                progressbar_move(response,port,filename,i_Range = 5,speed = 0.5)
+                motorMoved = input("\n Has the motor moved? Y/N")
+                match motorMoved:
+                    case "Y":
+                        fileWriter(filename,"\nMotor has moved at " + test_current)
+                        progressbar_move(response,port,filename,i_Range = 5,speed = 0.5)
+                    case "N":                        
+                        fileWriter(filename,"\nMotor stalled at " + test_current)                        
+                        test_current = input("\n whats the next current step you would like?")
+
