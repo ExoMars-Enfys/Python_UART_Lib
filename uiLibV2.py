@@ -1,16 +1,12 @@
 import os
 from uart_comms import uart_Packager
-from typewriter import typewrite
 from timer import load
 from time import sleep
 from timer  import progressbar_move
 from fileHandler import fileWriter
 from hk import Housekeeping_stream
-from binascii import unhexlify
-from binascii import hexlify
-from progress.spinner import MoonSpinner
-from alive_progress import alive_bar
 from operator import*
+import keyboard
 #from video_handler import videostart
 
 output = ""
@@ -416,13 +412,17 @@ def Sequences(port):
                 fileWriter(filename,"\n\nSweep #" + str(i+1))
                 fileWriter(filename,"\n Outer to Base")      
                 print("Driving to Base\n")
+                keyboard.wait('enter')
                 uart_Packager(response,port,hk = False,cmdInput= "10219000000000") #Driving to base stop
-                progressbar_move(response,port,filename,i_Range = 26,speed = 0.4)
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file
+                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
                 load(0.0834)
                 print("Driving to Outer\n")
                 fileWriter(filename,"\nBase to Outer")
-                uart_Packager(response,port,hk = False,cmdInput= "11219000000000") #Driving to outer stop
-                progressbar_move(response,port,filename,i_Range = 26,speed = 0.4)
+                keyboard.wait('enter')
+                uart_Packager(response,port,hk = False,cmdInput= "11219000000000") #Driving to outer stop                
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file
+                progressbar_move(response,port,filename,i_Range = 26,speed = 1)
             print("\n Now Finished Test Sequence \n")
         case "2":
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
@@ -432,21 +432,13 @@ def Sequences(port):
             uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
             uart_Packager(response,port,hk = False,cmdInput= "0C220022000064") #Setting Limits
             fileWriter(filename,"\n\n\nHK Packet before Movement : ")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file
-            for i in range(0,5):
-                load(0.0834)
-                print("\nAttempt " , i + 1 , " of 5 \n")
-                fileWriter(filename,"\n\nSweep #" + str(i+1))
-                fileWriter(filename,"\n Outer to Base")
-                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file     
-                print("Driving to Base\n")
-                for i in range(132):
-                    uart_Packager(response,port,hk = False,cmdInput= "10004000000000")
-                load(0.0834)
-                print("Driving to Outer\n")
-                fileWriter(filename,"\nBase to Outer")
-                uart_Packager(response,port,hk = False,cmdInput= "11219000000000") #Driving to outer stop
-                progressbar_move(response,port,filename,i_Range = 26,speed = 0.3)
+            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file   
+            print("Driving to Base\n")
+            for i in range(132):
+                keyboard.wait('enter')
+                uart_Packager(response,port,hk = False,cmdInput= "10004000000000")
+                Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename) #Writing HK to file   
+            load(0.0834)
             print("\n Now Finished Test Sequence \n")
                 
             
