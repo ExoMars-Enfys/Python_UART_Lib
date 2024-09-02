@@ -54,9 +54,11 @@ def main():
                     case "N":
                         typewrite("\n----------Now Resetting Motor for start of test sequencing---------\n",speed)
                         uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
+                        uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
+                        uart_Packager(response,port,hk = False,cmdInput= "0C3200320000A0") #Setting Limits
                         sleep(0.05)
-                        uart_Packager(response,port,hk = False,cmdInput= "11210000000000") #Driving to Outer Stop
-                        progressbar_move(response,port,filename,i_Range = 26,speed = 1)
+                        uart_Packager(response,port,hk = False,cmdInput= "13010000000000") #Driving to Outer Stop
+                        progressbar_move(response,port,filename,i_Range = 26,speed = 0.4)
                         Sequences(port)
             
             case "0" :
