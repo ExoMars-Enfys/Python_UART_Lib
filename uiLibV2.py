@@ -42,7 +42,7 @@ def UI(output,hk) :
         + "\n |   11   |  Move Motor Backwards                 |"
         + "\n |   12   |  Move Motor to Absolute Position      |"
         + "\n |   13   |  Drive Motor to Chosen End Switch     |"
-        + "\n |   15   |  Halt all Motor Movement              |"
+        + "\n |   15   |  Homing and Calibration               |"
         + "\n |   1F   |  Request Science Reading              |"
         + "\n ------------------------------------------------------ --\n")
     match cmd[0]:
@@ -53,7 +53,7 @@ def UI(output,hk) :
         case "00" :
             print("\n No further parameters required. Now Requesting Housekeeping from Artix 7")
             output = "".join(cmd)
-            hk = False
+            hk = True
             
         case "01" :
             print("\n No further parameters required. Now Clearing all Errors on Artix 7")
@@ -359,8 +359,8 @@ def Sequences(port):
     nominal_pwm_rate = "0006"
     nominal_speed = "0F"
     nominal_pwm_duty = "FF"
-    nominal_recirc = "7F"
-    nominal_guardtime = "0064"
+    nominal_recirc = "0F"
+    nominal_guardtime = "0064" 
     nominal_recval = "38"
     nominal_spi = "0005"
     absMax = "3200"
