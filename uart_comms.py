@@ -25,6 +25,7 @@ def uart_openport(port):
 
 def uart_Packager(response,port,hk,cmdInput):
     port.write(crc8Calculate(cmdInput))
+    print(bytes.hex(crc8Calculate(cmdInput)))
     response = port.read(72)
     print(bytes(response).hex())
     if hk == True:

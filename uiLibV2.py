@@ -355,6 +355,7 @@ def Freewill(port,hk):
     
 
 def Sequences(port):   
+    cmd = ["00"] *7
     nominal_current = "61A8"
     nominal_pwm_rate = "0006"
     nominal_speed = "0F"
@@ -372,8 +373,9 @@ def Sequences(port):
                             + "\n N. Assert Nominal Parameters"
                             + "\n 1. Full Sweep at Full Speed * 5 times "
                             + "\n 2. Full Sweep in steps of 200μm with 300ms wait between each stop"
-                            + "\n 3. Back and Forth Sequence "
-                            + "\n 4. Current Test \n")
+                            + "\n 3. Forward Steps "
+                            + "\n 4. Backward Steps"
+                            + "\n 5. Current Test \n")
     match sequence:
         case "N"  :
             print("\n Now writing Nominal Motor Drive parameters as: "
@@ -450,41 +452,43 @@ def Sequences(port):
             print("\n Now Finished Test Sequence \n")
                 
             
-        case "3":
-            filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
-            fileWriter(filename,"HK Data File for test : ")
-            fileWriter(filename,filename)
-            uart_Packager(response,port,hk = False,cmdInput= "0A61A800060FFF") #Setting nominal motor drive parameters
-            uart_Packager(response,port,hk = False,cmdInput= "0B7F0064380005") #Setting nominal motor guard parameters
-            
-            fileWriter(filename,"\n\n\nHK Packet before Movement : ")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            fileWriter(filename,"\n\nForwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nBackwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nForwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nBackwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nForwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "10(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
-            fileWriter(filename,"\n\nBackwards")
-            Housekeeping_stream(uart_Packager(response,port,hk = False,cmdInput= "00000000000000"),filename)
-            uart_Packager(response,port,hk = False,cmdInput= "11(enter steps) 0000000") #Driving to base stop
-            progressbar_move(response,port,filename,i_Range = 1,speed = 0.3)
+        case "3":                   
+            while(1):
+                cmd[0] = "10"
+                steps = cmd[1] = input(" --- Enter the amount of steps forward you want to move (Press ENTER to exit) ---")      
+                print(cmd[1])  
+                # hk= True
+                # uart_Packager(response,port,hk,cmdInput="00000000000000" )    
+                match steps:
+                    case steps if (b'0001' <= bytes(steps, 'utf-8') <=b'FFFF'):
+                            print("\n Moving Forward" , cmd[1], "steps")
+                            cmd[2] = cmd[1][2:4]
+                            cmd[1] = cmd[1][0:2]
+                            print("\n",cmd[1],"\n",cmd[2])
+                            hk=False
+                            uart_Packager(response,port,hk,cmdInput="".join(cmd) )
+                    case _:
+                        print("Not Valid")
+                        Sequences(port)
+        case "4":                   
+            while(1):
+                cmd[0] = "11"
+                steps = cmd[1] = input(" --- Enter the amount of steps forward you want to move (Press ENTER to exitt) ---")                   
+                hk= True
+                uart_Packager(response,port,hk,cmdInput="00000000000000" )         
+                match steps:
+                    case steps if (b'0001' <= bytes(steps, 'utf-8') <=b'FFFF'):
+                            print("\n Moving Forward" , cmd[1], "steps")
+                            cmd[2] = cmd[1][2:4]
+                            cmd[1] = cmd[1][0:2]
+                            print("\n",cmd[1],"\n",cmd[2])
+                            hk=False
+                            uart_Packager(response,port,hk,cmdInput="".join(cmd) )
+                    case _:
+                        print("Not Valid")
+                        Sequences(port)
 
-        case "4":
+        case "5":
             filename = input("\n Please enter the Filename Prefix for the Video and Text Files\n")
             fileWriter(filename,"HK Data File for test : ")
             fileWriter(filename,filename)
@@ -509,3 +513,5 @@ def Sequences(port):
                     case "N":                        
                         fileWriter(filename,"\nMotor stalled at " + test_current)                        
                         test_current = input("\n whats the next current step you would like?")
+        case _:
+            exit()
