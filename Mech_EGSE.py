@@ -22,7 +22,7 @@ response =""
 filename = ""
 speed = 0.005
 #---------------------FPGA Boot and Connect-------------------------#
-port = serial.Serial(port = "COM9",                                                    #Serial Port Initialisation
+port = serial.Serial(port = "COM13",                                                    #Serial Port Initialisation
                     baudrate=115200,
                     bytesize = serial.EIGHTBITS,
                     parity = serial.PARITY_ODD,

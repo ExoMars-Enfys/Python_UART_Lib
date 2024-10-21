@@ -63,8 +63,10 @@ def UI(output,hk) :
             os.system('cls')
             cmd[1] = input("\n Enter the Power Control Bit Mask\n" 
                             + "\n Available Options Are:"
-                            + "\n 1. 00 Power on Mechanism Board"
-                            + "\n 2. 01 Power on Detector Board\n")
+                            + "\n 01 Power Off"
+                            + "\n 01 Power on Mechanism Board"
+                            + "\n 02 Power on Detector Board"
+                            + "\n 03 Power on Both\n")
             match cmd[1]:
                 case "00":
                     print("\n Power on of Mechanism Board selected")
@@ -357,13 +359,21 @@ def Freewill(port,hk):
 def Sequences(port):   
     cmd = ["00"] *7
     nominal_current = "61A8"
-    nominal_pwm_rate = "0006"
+    nominal_pwm_rate = "00001"
     nominal_speed = "0F"
     nominal_pwm_duty = "FF"
-    nominal_recirc = "0F"
+    nominal_recirc = "03"
     nominal_guardtime = "0064" 
     nominal_recval = "38"
     nominal_spi = "0005"
+    current = "30D4"
+    pwm_rate = "0009"
+    speed = "0C"
+    pwm_duty = "7F"
+    recirc = "00"
+    guardtime = "00FA" 
+    recval = "A0"
+    spi = "00A0"
     absMax = "3200"
     relMax="3200"
     backoff = "00A0" 
@@ -391,6 +401,27 @@ def Sequences(port):
             + "\n     RecVal : " + nominal_recval
             + "\n     Spi Speed : " + nominal_spi)
             output = "".join("0B" + nominal_recirc + nominal_guardtime + nominal_recval + nominal_spi)
+            uart_Packager(response,port,hk = False,cmdInput=output)
+            print("\n Now writing Nominal Limit parameters as: "
+                + "\n     Absolute Limit : " + absMax
+                + "\n     Relative Limit : " + relMax
+                + "\n     Back-Off : " + backoff)
+            output = "".join("0C" + absMax + relMax + backoff)
+            uart_Packager(response,port,hk = False,cmdInput=output)
+        case "P"  :
+            print("\n Now writing Nominal Motor Drive parameters as: "
+            + "\n     Current : " + current
+            + "\n     Pwm Rate : " + pwm_rate
+            + "\n     Current : " + speed
+            + "\n     Current : " + pwm_duty)
+            output = "".join("0A" + current + pwm_rate + speed + pwm_duty)
+            uart_Packager(response,port,hk = False,cmdInput=output)
+            print("\n Now writing Nominal Guard parameters as: "
+            + "\n     Recirculation : " + recirc
+            + "\n     GuardTime : " + guardtime
+            + "\n     RecVal : " + recval
+            + "\n     Spi Speed : " + spi)
+            output = "".join("0B" + recirc + guardtime + recval + spi)
             uart_Packager(response,port,hk = False,cmdInput=output)
             print("\n Now writing Nominal Limit parameters as: "
                 + "\n     Absolute Limit : " + absMax
